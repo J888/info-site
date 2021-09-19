@@ -1,65 +1,175 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+// import { Button } from "bootstrap";
+import Head from "next/head";
+import {
+  Button,
+  Box,
+  Card,
+  Columns,
+  Container,
+  Content,
+  Heading,
+  Media,
+  Message,
+  Tag,
+  Block,
+} from "react-bulma-components";
+import MainWrapper from "../components/mainWrapper";
 
-export default function Home() {
+import Link from "next/link";
+import React, { useState } from "react";
+
+import { promises as fs } from 'fs'
+import path from 'path'
+
+export default function Home({ posts, topTags }) {
+
+  const [visiblePosts, setVisiblePosts] = useState(posts.slice(0,5));
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <MainWrapper pageTitle="Home">
+      <Columns>
+        <Columns.Column size={1}></Columns.Column>
+        <Columns.Column size={7}>
+          <Container>
+            <Heading>Posts</Heading>
+          </Container>
+        </Columns.Column>
+        <Columns.Column size={3}></Columns.Column>
+      </Columns>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+      <Columns>
+        <Columns.Column size={1}></Columns.Column>
+        <Columns.Column size={7}>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-around",
+            }}
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+            {visiblePosts.map((item, i) => (
+              <Link href={`/posts/${item.id}`} key={item.id}>
+                <div>
+                  <Card
+                    style={{ width: "18em", marginBottom: "1em" }}
+                    display={""}
+                    clickable
+                  >
+                    <Card.Image
+                      size="1by4"
+                      src={item.imageUrl}
+                      style={{ objectFit: "cover" }}
+                    />
+                    <Card.Content>
+                      <Media>
+                        <Media.Item>
+                          <Heading size={4}>{item.title}</Heading>
+                          <Heading subtitle size={6}>
+                            {item.subTitle}
+                          </Heading>
+                        </Media.Item>
+                      </Media>
+                      <Content>
+                        {item.description}
+                        <br />
+                        <time dateTime="2016-1-1">{item.createdAt}</time>
+                      </Content>
+                    </Card.Content>
+                  </Card>
+                </div>
+              </Link>
+            ))}
+          </div>
 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
+          {visiblePosts.length < posts.length && (
+            <Box>
+              <Button
+                color=""
+                onClick={() => {
+                  setVisiblePosts(posts.slice(0, visiblePosts.length + 5));
+                }}
+              >
+                Load More
+              </Button>
+            </Box>
+          )}
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+          {visiblePosts.length >= posts.length && (
+            <Box>
+              You're all caught up!
+            </Box>
+          )}
+        </Columns.Column>
+        <Columns.Column size={3}>
+          <Card>
+            <Message>
+              <Message.Header>Most Visited This Month</Message.Header>
+            </Message>
+
+            <Card.Content>
+              Fishing Boat Spills Fuel In Bodega Bay (PHOTOS)
+            </Card.Content>
+
+            <Card.Content>
+              ICYMI: 'We Just Need To See You Again': LI Mom Searc...
+            </Card.Content>
+
+            <Card.Content>
+              Connecticut Will Take In Over 300 Afghan Refugees: L...
+            </Card.Content>
+          </Card>
+
+          <Block/>
+          <Card>
+            <Message>
+              <Message.Header>Popular Hashtags</Message.Header>
+            </Message>
+
+            <Card.Content>
+              <Tag.Group>
+                {
+                  topTags.map(tag => <Link key={tag} href={`/tags/${tag}`}><Tag clickable>#{tag}</Tag></Link>)
+                }
+                {/* <Tag>#fall</Tag>
+                <Tag>#pa</Tag>
+                <Tag>#outdoors</Tag>
+                <Tag>#hurricane</Tag>
+                <Tag>#covid</Tag> */}
+              </Tag.Group>
+              
+            </Card.Content>
+          </Card>
+        </Columns.Column>
+      </Columns>
+    </MainWrapper>
+  );
+}
+
+export async function getStaticProps() {
+  const testDataPath = path.join(process.cwd(), 'testData', 'fakePosts.json')
+  const fileContents = await fs.readFile(testDataPath, 'utf8')
+
+  const posts = JSON.parse(fileContents);
+
+  let tagCountOccurence = { /* tag: # of occurences */ }
+
+  for (let post of posts) {
+    for (let tag of post.tags) {
+      if (tagCountOccurence[tag] == undefined) {
+        tagCountOccurence[tag] = 1;
+      } else {
+        tagCountOccurence[tag] += 1;
+      }
+    }
+  }
+
+  let topTags = Object.entries(tagCountOccurence).sort((a,b) => { if (a[1] > b[1]) { return -1} ; if (a[1] < b[1]) { return 1} ; return 0; }).slice(0,10)
+  topTags = topTags.map(topTag => topTag[0])
+
+  return {
+    props: {
+      posts,
+      topTags
+    },
+  }
 }
