@@ -1,4 +1,4 @@
-import { Navbar } from "react-bulma-components";
+import { Heading, Navbar } from "react-bulma-components";
 import Link from "next/link";
 
 const Nav = () => (
@@ -6,13 +6,14 @@ const Nav = () => (
     <Navbar.Brand>
       <Navbar.Item>
         <Link href="/">
-          <img
+          {/* <img
             alt="Bulma: a modern CSS framework based on Flexbox"
             // height="28"
             src="https://bulma.io/images/bulma-logo.png"
             // width="200em"
             // height="500em"
-          />
+          /> */}
+          <Heading>Exploring East</Heading>
         </Link>
       </Navbar.Item>
     </Navbar.Brand>

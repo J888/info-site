@@ -18,12 +18,13 @@ import MainWrapper from "../components/mainWrapper";
 import Link from "next/link";
 import React, { useState } from "react";
 
-import { promises as fs } from 'fs'
-import path from 'path'
+// import { promises as fs } from 'fs'
+import path from "path";
+import YAML from "js-yaml";
+import getPosts from "../util/getPosts";
 
-export default function Home({ posts, topTags }) {
-
-  const [visiblePosts, setVisiblePosts] = useState(posts.slice(0,5));
+export default function Home({ posts, topTags, mostVisited }) {
+  const [visiblePosts, setVisiblePosts] = useState(posts.slice(0, 5));
 
   return (
     <MainWrapper pageTitle="Home">
@@ -48,7 +49,10 @@ export default function Home({ posts, topTags }) {
             }}
           >
             {visiblePosts.map((item, i) => (
-              <Link href={`/posts/${item.id}`} key={item.id}>
+              <Link
+                href={`/posts/${item.category}/${item.id}`}
+                key={`${item.category}/${item.id}`}
+              >
                 <div>
                   <Card
                     style={{ width: "18em", marginBottom: "1em" }}
@@ -95,9 +99,7 @@ export default function Home({ posts, topTags }) {
           )}
 
           {visiblePosts.length >= posts.length && (
-            <Box>
-              You're all caught up!
-            </Box>
+            <Box>You're all caught up!</Box>
           )}
         </Columns.Column>
         <Columns.Column size={3}>
@@ -105,21 +107,30 @@ export default function Home({ posts, topTags }) {
             <Message>
               <Message.Header>Most Visited This Month</Message.Header>
             </Message>
+            {mostVisited?.length > 0 && (
+              <React.Fragment>
+                <Card.Content>
+                  Fishing Boat Spills Fuel In Bodega Bay (PHOTOS)
+                </Card.Content>
 
-            <Card.Content>
-              Fishing Boat Spills Fuel In Bodega Bay (PHOTOS)
-            </Card.Content>
+                <Card.Content>
+                  ICYMI: 'We Just Need To See You Again': LI Mom Searc...
+                </Card.Content>
 
-            <Card.Content>
-              ICYMI: 'We Just Need To See You Again': LI Mom Searc...
-            </Card.Content>
+                <Card.Content>
+                  Connecticut Will Take In Over 300 Afghan Refugees: L...
+                </Card.Content>
+              </React.Fragment>
+            )}
 
-            <Card.Content>
-              Connecticut Will Take In Over 300 Afghan Refugees: L...
-            </Card.Content>
+            {mostVisited == undefined && (
+              <React.Fragment>
+                <Card.Content>No data</Card.Content>
+              </React.Fragment>
+            )}
           </Card>
 
-          <Block/>
+          <Block />
           <Card>
             <Message>
               <Message.Header>Popular Hashtags</Message.Header>
@@ -127,16 +138,17 @@ export default function Home({ posts, topTags }) {
 
             <Card.Content>
               <Tag.Group>
-                {
-                  topTags.map(tag => <Link key={tag} href={`/tags/${tag}`}><Tag clickable>#{tag}</Tag></Link>)
-                }
+                {topTags.map((tag) => (
+                  <Link key={tag} href={`/tags/${tag}`}>
+                    <Tag clickable>#{tag}</Tag>
+                  </Link>
+                ))}
                 {/* <Tag>#fall</Tag>
                 <Tag>#pa</Tag>
                 <Tag>#outdoors</Tag>
                 <Tag>#hurricane</Tag>
                 <Tag>#covid</Tag> */}
               </Tag.Group>
-              
             </Card.Content>
           </Card>
         </Columns.Column>
@@ -146,12 +158,12 @@ export default function Home({ posts, topTags }) {
 }
 
 export async function getStaticProps() {
-  const testDataPath = path.join(process.cwd(), 'testData', 'fakePosts.json')
-  const fileContents = await fs.readFile(testDataPath, 'utf8')
-
-  const posts = JSON.parse(fileContents);
-
-  let tagCountOccurence = { /* tag: # of occurences */ }
+  const posts = await getPosts(
+    "/Users/john/Documents/static-site-private-files/local-info-site-1"
+  );
+  let tagCountOccurence = {
+    /* tag: # of occurences */
+  };
 
   for (let post of posts) {
     for (let tag of post.tags) {
@@ -163,13 +175,23 @@ export async function getStaticProps() {
     }
   }
 
-  let topTags = Object.entries(tagCountOccurence).sort((a,b) => { if (a[1] > b[1]) { return -1} ; if (a[1] < b[1]) { return 1} ; return 0; }).slice(0,10)
-  topTags = topTags.map(topTag => topTag[0])
+  let topTags = Object.entries(tagCountOccurence)
+    .sort((a, b) => {
+      if (a[1] > b[1]) {
+        return -1;
+      }
+      if (a[1] < b[1]) {
+        return 1;
+      }
+      return 0;
+    })
+    .slice(0, 10);
+  topTags = topTags.map((topTag) => topTag[0]);
 
   return {
     props: {
       posts,
-      topTags
+      topTags,
     },
-  }
+  };
 }
