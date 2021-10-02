@@ -16,8 +16,6 @@ module.exports = (phase) => {
     })()
   }
 
-  console.log(env.POSTS_DIR)
-
   /**
    * The domains that are allowed when using next/image
    */

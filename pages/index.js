@@ -21,7 +21,7 @@ import React, { useState } from "react";
 // import { promises as fs } from 'fs'
 import path from "path";
 import YAML from "js-yaml";
-import { getPostsLocal } from "../util/getPosts";
+import { getPostsS3 } from "../util/getPosts";
 
 export default function Home({ posts, topTags, mostVisited }) {
   const [visiblePosts, setVisiblePosts] = useState(posts.slice(0, 5));
@@ -158,9 +158,7 @@ export default function Home({ posts, topTags, mostVisited }) {
 }
 
 export async function getStaticProps() {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
   let tagCountOccurence = {
     /* tag: # of occurences */
   };

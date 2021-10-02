@@ -3,7 +3,7 @@ import path from "path";
 import { Block, Card, Columns, Heading } from "react-bulma-components";
 import React from "react";
 import Link from "next/link";
-import { getPostsLocal } from "../../util/getPosts";
+import { getPostsS3 } from "../../util/getPosts";
 import PostListWide from "../../components/postListWide";
 
 const PostsByTag = ({ matchingPosts, tag }) => {
@@ -24,9 +24,7 @@ const PostsByTag = ({ matchingPosts, tag }) => {
 };
 
 export async function getStaticProps({ params, preview = false, previewData }) {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
   const tag = params.tag;
   const matchingPosts = posts.filter((post) => post.tags.includes(tag));
 
@@ -39,9 +37,7 @@ export async function getStaticProps({ params, preview = false, previewData }) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
   const tags = Array.from(new Set(posts.map((post) => post.tags || []).flat()));
 
   return {

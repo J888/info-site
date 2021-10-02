@@ -1,38 +1,34 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import YAML from 'js-yaml'
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3"); // CommonJS import
+const REGION = 'us-east-2';
+const client = new S3Client({ region: REGION });
 
-const getPostsLocal = async (baseDir) => {
-  let postDirs = await fs.readdir(baseDir);
-  postDirs = postDirs.filter(pd => pd != '.DS_Store')
-  let posts = []
-  for (let i = 0; i < postDirs.length; i++) {
-    let dir = postDirs[i];
-    let composeFile = await fs.readFile(`${baseDir}/${dir}/compose.yml`)
-    let compose = YAML.load(composeFile);
-    let metadata = compose.metadata
-    let parts = compose.parts // this is where a mix of md and images are defined
+const getPostsS3 = async (Bucket, sitename) => {
+  return new Promise(async (resolve, reject) => {
+    let Key = `websites/${sitename}/posts/allPosts.json`;
+    let ContentType = 'application/json';
+    console.log(`Getting posts from s3 at path ${Key} with ContentType=${ContentType}`);
+    const command = new GetObjectCommand({ Bucket, Key, ContentType });
+    const response = await client.send(command);
+    const readStream = response.Body;
+    let dataStr = '';
+    readStream.on('data', (d) => {
+      console.log(d)
+      dataStr+=d;
+    });
 
-    metadata.parts = []
-    for (let j = 0; j < parts.length; j++) {
-      let part = parts[j];
-      if (part.type == 'MARKDOWN') {
-        let fileContents = await (await fs.readFile(`${baseDir}/${dir}/${part.fileName}`)).toString()
-        metadata.parts.push({
-          type: 'MARKDOWN',
-          fileContents
-        });
-      } else if (part.type == 'IMAGE') {
-        metadata.parts.push({
-          type: 'IMAGE',
-          url: part.url,
-          s3Url: part.s3Url
-        });
-      }
-    }
-    posts.push(metadata)
-  }
-  return posts;
+    readStream.on('close', () => {
+      resolve(JSON.parse(dataStr));
+    })
+
+    readStream.on('error', (err) => {
+      console.log('there was an error reading posts from s3: ');
+      console.log(err);
+      reject(err);
+    })
+  })
 }
 
-export { getPostsLocal };
+export { getPostsS3 };

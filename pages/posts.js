@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import PostListWide from "../components/postListWide";
 import MainWrapper from "../components/mainWrapper";
-import { getPostsLocal } from "../util/getPosts";
+import { getPostsS3 } from "../util/getPosts";
 
 const AllPosts = ({ postCategories }) => {
   return (
@@ -27,9 +27,7 @@ const AllPosts = ({ postCategories }) => {
 };
 
 export async function getStaticProps({ params, preview = false, previewData }) {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
   // const tag = params.tag;
   // const matchingPosts = posts.filter((post) => post.tags.includes(tag));
 

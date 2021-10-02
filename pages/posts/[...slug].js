@@ -19,7 +19,7 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import NextImage from "next/image";
 import styles from "../../sass/components/Post.module.scss";
-import { getPostsLocal } from "../../util/getPosts";
+import { getPostsS3 } from "../../util/getPosts";
 import PostListWide from "../../components/postListWide";
 import React from "react";
 
@@ -56,6 +56,7 @@ const PostContent = ({ data }) => (
             if (part.type == "MARKDOWN") {
               toRender = <ReactMarkdown>{part.fileContents}</ReactMarkdown>;
             } else if (part.type == "IMAGE") {
+              console.log(part.s3Url)
               toRender =
                 <Container>
                   <NextImage objectFit="cover" src={part.s3Url} alt="pic alt" height="550" width="700"/>
@@ -115,9 +116,7 @@ const Post = ({ data, postsByCategory, category }) => {
 };
 
 export async function getStaticProps({ params, preview = false, previewData }) {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
   console.log(posts[0].parts)
   const [category, id] = params.slug;
 
@@ -139,9 +138,8 @@ export async function getStaticProps({ params, preview = false, previewData }) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
+  console.log(posts);
 
   return {
     paths: posts.map((post) => `/posts/${post.category}/${post.id}`) || [],

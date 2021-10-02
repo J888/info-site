@@ -1,5 +1,5 @@
 import React from "react";
-import { getPostsLocal } from "../util/getPosts";
+import { getPostsS3 } from "../util/getPosts";
 
 /**
  * Sitemap component for SEO / crawler optimization
@@ -9,9 +9,7 @@ const SiteMap = () => {
 }
 
 export const getServerSideProps = async ({ res }) => {
-  const posts = await getPostsLocal(
-    process.env.POSTS_DIR
-  );
+  const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
   const tags = Array.from(new Set(posts.map((post) => post.tags || []).flat()));
 
   const BASE_URL = "https://localhost.com"
