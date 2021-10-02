@@ -1,4 +1,7 @@
 ## Run dev server
+
+Set env vars `LOCAL_POSTS_DIR`
+
 ```bash
 npm run dev
 ```
@@ -17,4 +20,8 @@ npm run start
 - Bulma-React
 - S3 for static file storage
 
+## To-Do:
 
+- Create S3 bucket and read/write role
+- Upload markdown files to S3
+- Read from S3 at build time

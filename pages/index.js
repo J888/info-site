@@ -21,7 +21,7 @@ import React, { useState } from "react";
 // import { promises as fs } from 'fs'
 import path from "path";
 import YAML from "js-yaml";
-import getPosts from "../util/getPosts";
+import { getPostsLocal } from "../util/getPosts";
 
 export default function Home({ posts, topTags, mostVisited }) {
   const [visiblePosts, setVisiblePosts] = useState(posts.slice(0, 5));
@@ -158,8 +158,8 @@ export default function Home({ posts, topTags, mostVisited }) {
 }
 
 export async function getStaticProps() {
-  const posts = await getPosts(
-    "/Users/john/Documents/static-site-private-files/local-info-site-1"
+  const posts = await getPostsLocal(
+    process.env.POSTS_DIR
   );
   let tagCountOccurence = {
     /* tag: # of occurences */

@@ -26,13 +26,7 @@ export default function MainWrapper(props) {
       </main>
 
       <footer className={styles.footer}>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          A JMH site
-        </a>
+        © 2021
       </footer>
     </div>
   );

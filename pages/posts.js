@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import PostListWide from "../components/postListWide";
 import MainWrapper from "../components/mainWrapper";
-import getPosts from "../util/getPosts";
+import { getPostsLocal } from "../util/getPosts";
 
 const AllPosts = ({ postCategories }) => {
   return (
@@ -27,8 +27,8 @@ const AllPosts = ({ postCategories }) => {
 };
 
 export async function getStaticProps({ params, preview = false, previewData }) {
-  const posts = await getPosts(
-    "/Users/john/Documents/static-site-private-files/local-info-site-1"
+  const posts = await getPostsLocal(
+    process.env.POSTS_DIR
   );
   // const tag = params.tag;
   // const matchingPosts = posts.filter((post) => post.tags.includes(tag));

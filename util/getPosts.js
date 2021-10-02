@@ -2,7 +2,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import YAML from 'js-yaml'
 
-const getPosts = async (baseDir) => {
+const getPostsLocal = async (baseDir) => {
   let postDirs = await fs.readdir(baseDir);
   postDirs = postDirs.filter(pd => pd != '.DS_Store')
   let posts = []
@@ -25,7 +25,8 @@ const getPosts = async (baseDir) => {
       } else if (part.type == 'IMAGE') {
         metadata.parts.push({
           type: 'IMAGE',
-          url: part.url
+          url: part.url,
+          s3Url: part.s3Url
         });
       }
     }
@@ -34,4 +35,4 @@ const getPosts = async (baseDir) => {
   return posts;
 }
 
-export default getPosts;
+export { getPostsLocal };

@@ -17,9 +17,11 @@ import {
 } from "react-bulma-components";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import NextImage from "next/image";
 import styles from "../../sass/components/Post.module.scss";
-import getPosts from "../../util/getPosts";
+import { getPostsLocal } from "../../util/getPosts";
 import PostListWide from "../../components/postListWide";
+import React from "react";
 
 const PostContent = ({ data }) => (
   <Columns>
@@ -47,16 +49,22 @@ const PostContent = ({ data }) => (
         </Container>
 
         <Section>
-          {data?.parts?.map((part) => {
+          {data?.parts?.map((part, i) => {
+
+            let toRender;
+
             if (part.type == "MARKDOWN") {
-              return <ReactMarkdown>{part.fileContents}</ReactMarkdown>;
+              toRender = <ReactMarkdown>{part.fileContents}</ReactMarkdown>;
             } else if (part.type == "IMAGE") {
-              return (
+              toRender =
                 <Container>
-                  <Image src={part.url} size={2} />
+                  <NextImage objectFit="cover" src={part.s3Url} alt="pic alt" height="550" width="700"/>
                 </Container>
-              );
             }
+
+            return <React.Fragment key={`part-${i}`}>
+              {toRender}
+            </React.Fragment>
           })}
 
           {data?.parts == undefined && <Section>Post has no content</Section>}
@@ -67,19 +75,11 @@ const PostContent = ({ data }) => (
       <Block>
         <Card>
           <Message>
-            <Message.Header>Related Articles</Message.Header>
+            <Message.Header>Related</Message.Header>
           </Message>
 
           <Card.Content>
-            Fishing Boat Spills Fuel In Bodega Bay (PHOTOS)
-          </Card.Content>
-
-          <Card.Content>
-            ICYMI: 'We Just Need To See You Again': LI Mom Searc...
-          </Card.Content>
-
-          <Card.Content>
-            Connecticut Will Take In Over 300 Afghan Refugees: L...
+            No data
           </Card.Content>
         </Card>
       </Block>
@@ -91,15 +91,7 @@ const PostContent = ({ data }) => (
           </Message>
 
           <Card.Content>
-            Fishing Boat Spills Fuel In Bodega Bay (PHOTOS)
-          </Card.Content>
-
-          <Card.Content>
-            ICYMI: 'We Just Need To See You Again': LI Mom Searc...
-          </Card.Content>
-
-          <Card.Content>
-            Connecticut Will Take In Over 300 Afghan Refugees: L...
+            No data
           </Card.Content>
         </Card>
       </Block>
@@ -123,9 +115,10 @@ const Post = ({ data, postsByCategory, category }) => {
 };
 
 export async function getStaticProps({ params, preview = false, previewData }) {
-  const posts = await getPosts(
-    "/Users/john/Documents/static-site-private-files/local-info-site-1"
+  const posts = await getPostsLocal(
+    process.env.POSTS_DIR
   );
+  console.log(posts[0].parts)
   const [category, id] = params.slug;
 
   if (category && !id) {
@@ -146,8 +139,8 @@ export async function getStaticProps({ params, preview = false, previewData }) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getPosts(
-    "/Users/john/Documents/static-site-private-files/local-info-site-1"
+  const posts = await getPostsLocal(
+    process.env.POSTS_DIR
   );
 
   return {
