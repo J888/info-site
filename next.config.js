@@ -22,7 +22,7 @@ module.exports = (phase) => {
    * The domains that are allowed when using next/image
    */
   const images = {
-    domains: [`${IMG_S3_BUCKET}.s3.${S3_REGION}.amazonaws.com`],
+    domains: [`${process.env.IMG_S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com`],
   }
 
   return {
