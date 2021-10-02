@@ -17,10 +17,6 @@ import MainWrapper from "../components/mainWrapper";
 
 import Link from "next/link";
 import React, { useState } from "react";
-
-// import { promises as fs } from 'fs'
-import path from "path";
-import YAML from "js-yaml";
 import { getPostsS3 } from "../util/getPosts";
 
 export default function Home({ posts, topTags, mostVisited }) {
