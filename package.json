@@ -20,11 +20,11 @@
     "react-bulma-components": "^4.0.7",
     "react-dom": "17.0.2",
     "react-markdown": "^7.0.1",
+    "rehype-raw": "^6.1.0",
     "sharp": "^0.29.1"
   },
   "devDependencies": {
     "faker": "^5.5.3",
-    "js-yaml": "^4.1.0",
-    "rehype-raw": "^6.1.0"
+    "js-yaml": "^4.1.0"
   }
 }
