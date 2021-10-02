@@ -1,7 +1,4 @@
 import MainWrapper from "../../components/mainWrapper";
-import Nav from "../../components/navbar";
-// import { promises as fs } from "fs";
-import path from "path";
 import {
   Block,
   Card,

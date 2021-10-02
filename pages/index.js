@@ -1,5 +1,3 @@
-// import { Button } from "bootstrap";
-import Head from "next/head";
 import {
   Button,
   Box,

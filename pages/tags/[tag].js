@@ -1,8 +1,6 @@
 import MainWrapper from "../../components/mainWrapper";
-import path from "path";
-import { Block, Card, Columns, Heading } from "react-bulma-components";
+import { Columns, Heading } from "react-bulma-components";
 import React from "react";
-import Link from "next/link";
 import { getPostsS3 } from "../../util/getPosts";
 import PostListWide from "../../components/postListWide";
 

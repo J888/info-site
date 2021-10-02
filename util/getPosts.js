@@ -1,6 +1,3 @@
-import { promises as fs } from 'fs'
-import path from 'path'
-import YAML from 'js-yaml'
 const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3"); // CommonJS import
 const REGION = 'us-east-2';
 const client = new S3Client({ region: REGION });
