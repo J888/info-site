@@ -1,6 +1,6 @@
 // import { Button } from "bootstrap";
 import Head from "next/head";
-import { Card, Columns, Content, Heading, Media, Navbar, Image, Hero, Container, Message, Block } from "react-bulma-components";
+import { Block } from "react-bulma-components";
 import Nav from "./navbar";
 
 import styles from "../styles/Home.module.css";

@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "faker": "^5.5.3",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "rehype-raw": "^6.1.0"
   }
 }

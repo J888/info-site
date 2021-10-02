@@ -5,7 +5,6 @@ import {
   Columns,
   Container,
   Content,
-  Form,
   Heading,
   Image,
   Message,
@@ -19,6 +18,7 @@ import styles from "../../sass/components/Post.module.scss";
 import { getPostsS3 } from "../../util/getPosts";
 import PostListWide from "../../components/postListWide";
 import React from "react";
+import rehypeRaw from 'rehype-raw'
 
 const PostContent = ({ data }) => (
   <Columns>
@@ -51,9 +51,8 @@ const PostContent = ({ data }) => (
             let toRender;
 
             if (part.type == "MARKDOWN") {
-              toRender = <ReactMarkdown>{part.fileContents}</ReactMarkdown>;
+              toRender = <ReactMarkdown rehypePlugins={[rehypeRaw]}>{part.fileContents}</ReactMarkdown>;
             } else if (part.type == "IMAGE") {
-              console.log(part.s3Url)
               toRender =
                 <Container>
                   <NextImage objectFit="cover" src={part.s3Url} alt="pic alt" height="550" width="700"/>
@@ -136,7 +135,6 @@ export async function getStaticProps({ params, preview = false, previewData }) {
 
 export async function getStaticPaths() {
   const posts = await getPostsS3(process.env.STATIC_FILES_S3_BUCKET, process.env.SITE_FOLDER_S3);
-  console.log(posts);
 
   return {
     paths: posts.map((post) => `/posts/${post.category}/${post.id}`) || [],

@@ -12,7 +12,6 @@ const getPostsS3 = async (Bucket, sitename) => {
     const readStream = response.Body;
     let dataStr = '';
     readStream.on('data', (d) => {
-      console.log(d)
       dataStr+=d;
     });
 

@@ -1,4 +1,4 @@
-import { Columns, Heading } from "react-bulma-components";
+import { Columns } from "react-bulma-components";
 import React from "react";
 import Link from "next/link";
 import MainWrapper from "../components/mainWrapper";
